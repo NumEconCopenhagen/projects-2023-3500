@@ -1,9 +1,9 @@
-# \[Group name\]
+# \[3500\]
 
 **Group members:**
-- A
-- B
-- C
+- Frederik Have Rundager
+- Jakob Forchammer
+- Jonathan Høgh Hansen
 
 This repository contains  
 1. Inaugural project. 
