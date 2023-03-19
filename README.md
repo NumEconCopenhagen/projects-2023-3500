@@ -1,9 +1,9 @@
 # \[3500\]
 
 **Group members:**
-- Frederik Have Rundager
+- Frederik Have Rundager Pedersen
 - Jakob Forchhammer 
-- Jonathan Wenzel Pedersen
+- Jonathan Høgh Hansen
 
 This repository contains  
 1. Inaugural project. 
