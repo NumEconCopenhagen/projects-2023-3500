@@ -100,10 +100,13 @@ class HouseholdSpecializationModelClass:
         # d. find maximizing argument
         j = np.argmax(u)
         
-        opt.LM = LM[j]
-        opt.HM = HM[j]
-        opt.LF = LF[j]
-        opt.HF = HF[j]
+        #opt.LM = LM[j]
+        #opt.HM = HM[j]
+        #opt.LF = LF[j]
+        #opt.HF = HF[j]
+
+        # d1. finding HF/HM relationship
+        opt.HF/HM = HF[j]/HM[j]
 
         # e. print
         if do_print:
