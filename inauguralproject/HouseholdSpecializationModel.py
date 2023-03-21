@@ -121,22 +121,22 @@ class HouseholdSpecializationModelClass:
         sol = self.sol 
         opt = SimpleNamespace()
         
-        # a. guesses:
+        # Making guesses for each parameter:
         #LM,HM,LF,HF
-        LM_guess=6
-        HM_guess=6
-        LF_guess=6
-        HF_guess=6
-        x_guess=[LM_guess,HM_guess,LF_guess,HF_guess]
+        LM_g=6
+        HM_g=6
+        LF_g=6
+        HF_g=6
+        All_g=[LM_g,HM_g,LF_g,HF_g]
 
-        # b. creating objective 
-        obj = lambda x: -self.calc_utility(x[0],x[1],x[2],x[3])
+        # Creating objective 
+        objective_function = lambda x: -self.calc_utility(x[0],x[1],x[2],x[3])
 
-        # c. creating bounds
+        # Setting bounds
         bounds=[(0,24),(0,24),(0,24),(0,24)]
         
-        # d. creating result element and extracting values from it
-        res = optimize.minimize(obj,x_guess,method='Nelder-Mead',bounds=bounds) 
+        # Finding result element and extracting values from it
+        res = optimize.minimize(objective_function,All_g,method='Nelder-Mead',bounds=bounds) 
         opt.LM = res.x[0]
         opt.HM = res.x[1]
         opt.LF = res.x[2]
