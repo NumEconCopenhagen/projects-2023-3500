@@ -1,7 +1,7 @@
 # \[3500\]
 
 **Group members:**
-- Frederik Have Rundager Pedersen
+- Frederik Have Rundager
 - Jakob Forchhammer 
 - Jonathan Høgh Hansen
 
