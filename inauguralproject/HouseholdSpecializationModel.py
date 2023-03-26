@@ -152,25 +152,19 @@ class HouseholdSpecializationModelClass:
 
     def solve_wF_vec(self,discrete=False):
         """ solve model for vector of female wages """
+
         par = self.par
         sol = self.sol
-        wF_vec = np.linspace(0.8, 1.2, 5)
-        sol.HM_vec = []
-        sol.LM_vec = []
-        sol.LF_vec = []
-        sol.HF_vec = []
 
-        for wF in wF_vec:
+        for i,wF in enumerate(par.wF_vec):    
             par.wF = wF
-            if discrete == True:
-                opt = self.solve_discrete()
-            else:
-                opt = self.solve()
-            sol.HM_vec.append(opt.HM)
-            sol.LM_vec.append(opt.LM)
-            sol.LF_vec.append(opt.LF)
-            sol.HF_vec.append(opt.HF)
-        return sol
+            
+            # Running the model and replacing the values in the vectors with the optimal values
+            opt = self.solve()
+            sol.HF_vec[i]=opt.HF
+            sol.HM_vec[i]=opt.HM
+
+        return sol.HF_vec, sol.HM_vec
 
 
 
@@ -180,10 +174,14 @@ class HouseholdSpecializationModelClass:
         par = self.par
         sol = self.sol
 
+        self.solve_wF_vec()
+
         x = np.log(par.wF_vec)
         y = np.log(sol.HF_vec/sol.HM_vec)
         A = np.vstack([np.ones(x.size),x]).T
-        sol.beta0,sol.beta1 = np.linalg.lstsq(A,y,rcond=None)[0]
+        sol.beta0,sol.beta1 = np.linalg.lstsq(A,y,rcond=None)[0] 
+
+        return sol.beta0,sol.beta1
         
     
     def estimate(self):
