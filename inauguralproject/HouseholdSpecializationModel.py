@@ -152,8 +152,27 @@ class HouseholdSpecializationModelClass:
 
     def solve_wF_vec(self,discrete=False):
         """ solve model for vector of female wages """
+        par = self.par
+        sol = self.sol
+        wF_vec = np.linspace(0.8, 1.2, 5)
+        sol.HM_vec = []
+        sol.LM_vec = []
+        sol.LF_vec = []
+        sol.HF_vec = []
 
-        pass
+        for wF in wF_vec:
+            par.wF = wF
+            if discrete == True:
+                opt = self.solve_discrete()
+            else:
+                opt = self.solve()
+            sol.HM_vec.append(opt.HM)
+            sol.LM_vec.append(opt.LM)
+            sol.LF_vec.append(opt.LF)
+            sol.HF_vec.append(opt.HF)
+        return sol
+
+
 
     def run_regression(self):
         """ run regression """
@@ -165,8 +184,25 @@ class HouseholdSpecializationModelClass:
         y = np.log(sol.HF_vec/sol.HM_vec)
         A = np.vstack([np.ones(x.size),x]).T
         sol.beta0,sol.beta1 = np.linalg.lstsq(A,y,rcond=None)[0]
+        
     
-    def estimate(self,alpha=None,sigma=None):
+    def estimate(self):
         """ estimate alpha and sigma """
+        par = self.par
+        sol = self.sol
+        
+        def error(x):
+            par.alpha, par.sigma = x
+            self.solve_wF_vec()
+            self.run_regression()
+            fejl = (par.beta0_target-sol.beta0)**2  + (par.beta1_target-sol.beta1)**2
+            return fejl
+        
+        x0 = [0.5,0.5]
+        bounds = [(0,1),(0,1)]
+        solution = optimize.minimize(error, x0, method='Nelder-Mead', bounds=bounds)
+        sol.alpha = solution.x[0]
+        sol.sigma = solution.x[1]
+        
 
-        pass
+                                        
