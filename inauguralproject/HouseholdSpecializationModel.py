@@ -156,15 +156,20 @@ class HouseholdSpecializationModelClass:
         par = self.par
         sol = self.sol
 
-        for i,wF in enumerate(par.wF_vec):    
-            par.wF = wF
-            
-            # Running the model and replacing the values in the vectors with the optimal values
-            opt = self.solve()
-            sol.HF_vec[i]=opt.HF
-            sol.HM_vec[i]=opt.HM
+        
+        wF_vec = np.linspace(0.8, 1.2, 5)
 
-        return sol.HF_vec, sol.HM_vec
+        for i, wF in enumerate(wF_vec):
+             par.wF = wF
+             if discrete == True:
+                opt = self.solve_discrete()
+             else:
+                opt = self.solve()
+             sol.HM_vec[i] = opt.HM
+             sol.LM_vec[i] = opt.LM
+             sol.LF_vec[i] = opt.LF
+             sol.HF_vec[i] = opt.HF
+        return sol
 
 
 
@@ -174,14 +179,14 @@ class HouseholdSpecializationModelClass:
         par = self.par
         sol = self.sol
 
-        self.solve_wF_vec()
+        
 
         x = np.log(par.wF_vec)
         y = np.log(sol.HF_vec/sol.HM_vec)
         A = np.vstack([np.ones(x.size),x]).T
         sol.beta0,sol.beta1 = np.linalg.lstsq(A,y,rcond=None)[0] 
 
-        return sol.beta0,sol.beta1
+        
         
     
     def estimate(self):
@@ -197,7 +202,7 @@ class HouseholdSpecializationModelClass:
             return fejl
         
         x0 = [0.5,0.5]
-        bounds = [(0,1),(0,1)]
+        bounds = [(0.001,1.0),(0.001,1.0)]
         solution = optimize.minimize(error, x0, method='Nelder-Mead', bounds=bounds)
         sol.alpha = solution.x[0]
         sol.sigma = solution.x[1]
