@@ -189,23 +189,44 @@ class HouseholdSpecializationModelClass:
         
         
     
-    def estimate(self):
+    def estimate(self, use='normal'):
         """ estimate alpha and sigma """
-        par = self.par
-        sol = self.sol
+        if use == 'normal':
+            par = self.par
+            sol = self.sol
         
-        def error(x):
-            par.alpha, par.sigma = x
-            self.solve_wF_vec()
-            self.run_regression()
-            fejl = (par.beta0_target-sol.beta0)**2  + (par.beta1_target-sol.beta1)**2
-            return fejl
+            def error(x):
+                par.alpha, par.sigma = x
+                self.solve_wF_vec()
+                self.run_regression()
+                fejl = (par.beta0_target-sol.beta0)**2  + (par.beta1_target-sol.beta1)**2
+                return fejl
         
-        x0 = [0.5,0.5]
-        bounds = [(0.001,1.0),(0.001,1.0)]
-        solution = optimize.minimize(error, x0, method='Nelder-Mead', bounds=bounds)
-        sol.alpha = solution.x[0]
-        sol.sigma = solution.x[1]
+         
+            x0 = [0.5,0.5]
+            bounds = [(0.001,1.0),(0.001,1.0)]
+            solution = optimize.minimize(error, x0, method='Nelder-Mead', bounds=bounds)
+            sol.alpha = solution.x[0]
+            sol.sigma = solution.x[1]
+
+        elif use=='extended':
+            par = self.par
+            sol = self.sol
+            par.alpha= 0.5
+            def error(x):
+                par.sigma = x
+                self.solve_wF_vec()
+                self.run_regression()
+                fejl = (par.beta0_target-sol.beta0)**2  + (par.beta1_target-sol.beta1)**2
+                return fejl
+        
+            x0 = [0.5]
+            bounds = (0.01,1.0)
+            solution = optimize.minimize_scalar(error, x0, method='Bounded', bounds=bounds)
+            sol.sigma = solution.x
+            
         
 
+   
+        
                                         
