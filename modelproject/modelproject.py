@@ -13,7 +13,7 @@ class Koopman:
 
         par = self.par = SimpleNamespace() # parameters
         sim = self.sim = SimpleNamespace() # simulation variables
-
+        opt = SimpleNamespace()
         # a. externally given parameters
         par.a = 0.5 
 
@@ -36,15 +36,8 @@ class Koopman:
         sim.x1 = np.zeros(par.simT)
         sim.x2 = np.zeros(par.simT)
         sim.m = np.zeros(par.simT)
+        sim.pi = np.zeros(par.simT)
 
-
-    def calc_compound_par(self):
-        """ calculates compound parameters """
-
-        par = self.par
-
-        par.a = (1+par.alpha*par.gamma*par.phi)/(1+par.alpha*par.gamma)
-        par.beta = 1/(1+par.alpha*par.gamma)
 
     def simulate(self):
         """ simulate the full model """
@@ -57,15 +50,15 @@ class Koopman:
 
         # b. period-by-period
         # Output from company
-        sim.y = 1/(2*sim.p1)
+        y = 1/(2*p1)
 
         # Profit
-        pi = 1/(4*sim.p1)
+        pi = 1/(4*p1)
 
         # Utility maximization
-        m = sim.p1*par.e1+par.p2*par.e2+pi
-        sim.x1 = par.a*(m/sim.p1)
-        sim.x2 = (1-par.a)*(m/par.p2)
+        m = p1*par.e1+par.p2*par.e2+pi
+        x1 = par.a*(m/p1)
+        x2 = (1-par.a)*(m/par.p2)
 
 
 
