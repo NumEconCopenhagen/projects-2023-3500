@@ -29,6 +29,7 @@ class HouseholdSpecializationModelClass:
         # d. wages
         par.wM = 1.0
         par.wF = 1.0
+        par.gap = 1
         par.wF_vec = np.linspace(0.8,1.2,5)
 
         # e. targets
@@ -51,7 +52,7 @@ class HouseholdSpecializationModelClass:
         sol = self.sol
 
         # a. consumption of market goods
-        C = par.wM*LM + par.wF*LF
+        C = par.wM*LM + par.wF*(1-par.gap)*LF
 
         # b. home production
         if par.sigma == 1:
@@ -68,9 +69,8 @@ class HouseholdSpecializationModelClass:
 
         # d. disutlity of work
         epsilon_ = 1+1/par.epsilon
-        TM = LM+HM
-        TF = LF+HF
-        disutility = par.nu*(TM**epsilon_/epsilon_+TF**epsilon_/epsilon_)
+        par.gammaM = 1
+        disutility = par.nu*((LM+par.gammaM*HM)**epsilon_/epsilon_+(LF+HF)**epsilon_/epsilon_)
         
         return utility - disutility
 
@@ -189,41 +189,47 @@ class HouseholdSpecializationModelClass:
         
         
     
-    def estimate(self, use='normal'):
+    def estimate(self):
         """ estimate alpha and sigma """
-        if use == 'normal':
-            par = self.par
-            sol = self.sol
+    
+        par = self.par
+        sol = self.sol
         
-            def error(x):
-                par.alpha, par.sigma = x
-                self.solve_wF_vec()
-                self.run_regression()
-                fejl = (par.beta0_target-sol.beta0)**2  + (par.beta1_target-sol.beta1)**2
-                return fejl
+        def error(x):
+            par.alpha, par.sigma = x
+            self.solve_wF_vec()
+            self.run_regression()
+            fejl = (par.beta0_target-sol.beta0)**2  + (par.beta1_target-sol.beta1)**2
+            return fejl
         
          
-            x0 = [0.5,0.5]
-            bounds = [(0.001,1.0),(0.001,1.0)]
-            solution = optimize.minimize(error, x0, method='Nelder-Mead', bounds=bounds)
-            sol.alpha = solution.x[0]
-            sol.sigma = solution.x[1]
+        x0 = [0.5,0.5]
+        bounds = [(0.001,1.0),(0.001,1.0)]
+        solution = optimize.minimize(error, x0, method='Nelder-Mead', bounds=bounds)
+        sol.alpha = solution.x[0]
+        sol.sigma = solution.x[1]
+        print(f"    Beta0_hat =  {sol.beta0:.2f}")
+        print(f"    Beta1_hat =  {sol.beta1:.2f}")
 
-        elif use=='extended':
-            par = self.par
-            sol = self.sol
-            par.alpha= 0.5
-            def error(x):
-                par.sigma = x
-                self.solve_wF_vec()
-                self.run_regression()
-                fejl = (par.beta0_target-sol.beta0)**2  + (par.beta1_target-sol.beta1)**2
-                return fejl
+    def estimate5(self):
+        par = self.par
+        sol = self.sol
+        par.alpha= 0.5
+        def error(x):
+            par.sigma, par.gammaM, par.gap = x
+            self.solve_wF_vec()
+            self.run_regression()
+            fejl = (par.beta0_target-sol.beta0)**2  + (par.beta1_target-sol.beta1)**2
+            return fejl
         
-            x0 = [0.5]
-            bounds = (0.01,1.0)
-            solution = optimize.minimize_scalar(error, x0, method='Bounded', bounds=bounds)
-            sol.sigma = solution.x
+        x0 = [0.5, 2.5, 0.90]
+        bounds = [(0.01,1.0), (0.01,5.01), (0.001,0.99)]
+        solution = optimize.minimize(error, x0, method='Nelder-Mead', bounds=bounds)
+        sol.sigma = solution.x[0]
+        sol.gammaM = solution.x[1]
+        sol.gap = solution.x[2]
+        print(f"    Beta0_hat =  {sol.beta0:.2f}")
+        print(f"    Beta1_hat =  {sol.beta1:.2f}")
             
         
 
