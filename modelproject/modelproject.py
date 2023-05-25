@@ -38,20 +38,20 @@ class OLGModelClass:
         par.delta = 0.5 # Depreciation rate
 
         # c. Government
-        par.tau_w = 0.2 # Tax in labor income
-        par.tau_r = 0.1 # Tax on capital income
+        par.tau_w = 0.35 # Tax in labor income
+        par.tau_r = 0.2 # Tax on capital income
         par.bal_budget = True # Making sure the budget is complied
 
         # d. Initial stocks
-        par.K_lag_ini = 1.0 # Initial capital stock
+        par.K_lag_ini = 0.5 # Initial capital stock
         par.B_lag_ini = 0.0 # Initial government debt
 
         # e. Timeframe
         par.simT = 50 # Length of simulation
 
         # f. Population
-        par.n = np.full(par.simT, 0.01) # Population growth rate before the policy
-        par.n[20:] = -0.005 # Population growth rate after the policy
+        par.n = np.full(par.simT, 0.05) # Population growth rate before the policy
+        #par.n[20:] = 0.05 # Population growth rate after the policy
         par.surv = 0.98 # Probability of surviving (becoming old)
         par.p_ini = 1 # initial population
         par.p_young = [par.p_ini] + [0] * (par.simT - 1) # The young initial population
