@@ -29,7 +29,7 @@ class HouseholdSpecializationModelClass:
         # d. wages
         par.wM = 1.0
         par.wF = 1.0
-        par.gap = 1
+        par.gap = 0
         par.wF_vec = np.linspace(0.8,1.2,5)
 
         # e. targets
