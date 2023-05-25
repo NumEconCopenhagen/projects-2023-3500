@@ -4,8 +4,8 @@ import numpy as np
 from scipy import optimize
 import pandas as pd 
 import matplotlib.pyplot as plt
-
-class OLGModelClass:
+ 
+class OLGClass:
 
     def __init__(self,do_print=True):
         """ initialize the model """
