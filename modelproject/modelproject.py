@@ -135,7 +135,7 @@ def find_s_bracket(par,sim,t,maxiter=500,do_print=False):
 
     # a. Maximum bracket
     s_min = 0.0 + 1e-8 # Save nothing (almost)
-    s_max = 1.0 - 1e-8 # save everything (almost)
+    s_max = 1.0 - 1e-8 # Save everything (almost)
 
     # b. Finding value and Euler error for maximum saving rate
     value = calc_euler_error(s_max,par,sim,t)
