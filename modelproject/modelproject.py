@@ -16,14 +16,14 @@ class OLGClass:
         self.sim = SimpleNamespace() # Defining namespace for simulation variables
 
         if do_print: print('calling .baseline()')
-        self.baseline() # calls baseline function
+        self.baseline()
 
         if do_print: print('calling .allocate()')
-        self.allocate() # calls allocation function, defined below
+        self.allocate()
     
 
     def baseline(self):
-        """ setups baseline parameters """
+        """ Setup baseline parameters """
 
         par = self.par
 
@@ -51,9 +51,8 @@ class OLGClass:
 
         # f. Population
         par.n = np.full(par.simT, 0.05) # Population growth rate before the policy
-        #par.n[20:] = 0.05 # Population growth rate after the policy
         par.surv = 0.98 # Probability of surviving (becoming old)
-        par.p_ini = 1 # initial population
+        par.p_ini = 1 # Initial population
         par.p_young = [par.p_ini] + [0] * (par.simT - 1) # The young initial population
         par.p_old = [par.p_ini*par.surv/(1+par.n[0])] + [0] * (par.simT - 1) # The old initial population
 
@@ -118,7 +117,7 @@ class OLGClass:
             # iii. Find bracket to search for the optimal savings rate
             s_min,s_max = find_s_bracket(par,sim,t)
 
-            # iv. find optimal s
+            # iv. Find optimal s
             obj = lambda s: calc_euler_error(s,par,sim,t=t) # Objective function
             result = optimize.root_scalar(obj,bracket=(s_min,s_max),method='bisect') # Optimize w.r.t. s
             s = result.root # Finding the optimized value of s
@@ -134,7 +133,7 @@ class OLGClass:
 def find_s_bracket(par,sim,t,maxiter=500,do_print=False):
     """ Find a bracket for s """
 
-    # a. maximum bracket
+    # a. Maximum bracket
     s_min = 0.0 + 1e-8 # Save nothing (almost)
     s_max = 1.0 - 1e-8 # save everything (almost)
 
@@ -168,12 +167,12 @@ def find_s_bracket(par,sim,t,maxiter=500,do_print=False):
                 print(f'bracket to search in with opposite signed errors:')
                 print(f'[{s_min:12.8f}-{s_max:12.8f}]')
             return s_min,s_max
-        elif not valid: # too low s -> increase lower bound
+        elif not valid: # Too low s -> increase lower bound
             lower = s
-        else: # too high s -> increase upper bound
+        else: # Too high s -> increase upper bound
             upper = s
 
-        # iv. increment
+        # iv.
         it += 1
 
     raise Exception('cannot find bracket for s')
@@ -234,7 +233,7 @@ def simulate_before_s(par,sim,t):
     # c. The olds consumption in period t
     sim.C2[t] = (1+sim.rt[t])*(sim.K_lag[t]+sim.B_lag[t]) 
 
-    # d. government activities
+    # d. Government activities
     sim.T[t] = par.tau_r*sim.r[t]*(sim.K_lag[t]+sim.B_lag[t]) + par.tau_w*sim.w[t]*sim.L_lag[t] # Tax revenue
     
     if par.bal_budget == True: # Makes sure the governments budget holds 
