@@ -12,8 +12,8 @@ class OLGClass:
 
         if do_print: print('initializing the model:')
 
-        self.par = SimpleNamespace() # defining namespace for parameters
-        self.sim = SimpleNamespace() # defining namespace for simulation variables
+        self.par = SimpleNamespace() # Defining namespace for parameters
+        self.sim = SimpleNamespace() # Defining namespace for simulation variables
 
         if do_print: print('calling .baseline()')
         self.baseline() # calls baseline function
